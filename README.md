@@ -32,7 +32,7 @@ Ikuti langkah-langkah berikut untuk menjalankan sistem ini di komputer lokal (*l
 
 ### 2. Instalasi Dependensi (PHPMailer)
 Jika folder `vendor` belum ada di dalam folder `api/`, buka terminal di folder `api/` dan jalankan perintah:
-```bash
+
 composer require phpmailer/phpmailer
 
 ### 3. Konfigurasi SMTP Email
@@ -62,6 +62,5 @@ Dikembangkan oleh
 - Anjel Dina Erawati    (240103155)
 - Aulia Athifa zahra    (240103156)
 - Nayla Putri Salsabila (240103172)
-Nayla Putri Salsabila   (240103172)
 
 *Proyek ini murni ditujukan untuk simulasi dan pembelajaran akademik (Information Security).*
