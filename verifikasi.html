@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Verifikasi OTP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f6; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .card-custom { border: none; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 40px; width: 100%; max-width: 420px; }
+        .otp-box { width: 50px; height: 60px; text-align: center; font-size: 24px; font-weight: bold; border-radius: 10px; border: 2px solid #e9ecef; transition: all 0.2s;}
+        .otp-box:focus { border-color: #0d6efd; outline: none; box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15); }
+    </style>
+</head>
+<body>
+<div class="card card-custom bg-white">
+    <h4 class="text-center fw-bold mb-2">Kode Keamanan</h4>
+    <p class="text-muted text-center small mb-4">Masukkan 6 digit kode yang dikirim ke email.</p>
+    <div id="alertBox" class="alert d-none small" role="alert"></div>
+    <form id="otpForm">
+        <div class="d-flex justify-content-between mb-4">
+            <input type="text" class="otp-box" maxlength="1" required>
+            <input type="text" class="otp-box" maxlength="1" required>
+            <input type="text" class="otp-box" maxlength="1" required>
+            <input type="text" class="otp-box" maxlength="1" required>
+            <input type="text" class="otp-box" maxlength="1" required>
+            <input type="text" class="otp-box" maxlength="1" required>
+        </div>
+        <button type="submit" id="btnVerify" class="btn btn-primary btn-lg w-100 rounded-3">Verifikasi Sesi</button>
+    </form>
+</div>
+<script>
+    const emailTarget = sessionStorage.getItem('target_email');
+    if(!emailTarget) window.location.href = 'index.html';
+
+    const inputs = document.querySelectorAll('.otp-box');
+    inputs.forEach((input, index) => {
+        input.addEventListener('keyup', (e) => {
+            if (e.target.value.length === 1 && index < inputs.length - 1) inputs[index + 1].focus();
+            else if (e.key === 'Backspace' && index > 0) inputs[index - 1].focus();
+        });
+    });
+
+    document.getElementById('otpForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btnVerify = document.getElementById('btnVerify');
+        const alertBox = document.getElementById('alertBox');
+        let otpCode = ''; inputs.forEach(input => otpCode += input.value);
+        btnVerify.innerText = "Memverifikasi..."; btnVerify.disabled = true;
+
+        fetch('api/verify_otp.php', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailTarget, otp: otpCode })
+        }).then(res => res.json()).then(data => {
+            alertBox.classList.remove('d-none', 'alert-success', 'alert-danger');
+            if(data.status === 'success') {
+                alertBox.classList.add('alert-success'); alertBox.innerText = data.pesan;
+                btnVerify.innerText = "Akses Diberikan";
+                setTimeout(() => { window.location.href = 'reset_sandi.html'; }, 2000);
+            } else {
+                alertBox.classList.add('alert-danger'); alertBox.innerText = data.pesan;
+                btnVerify.innerText = "Verifikasi Sesi"; btnVerify.disabled = false;
+            }
+        });
+    });
+</script>
+</body>
+</html>
